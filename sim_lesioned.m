@@ -5,6 +5,7 @@ fsum = fullfile('sum',sprintf('%s.mat',mfilename));
 do_sim = ~exist(fsum,'file');
 
 if do_sim
+    mkdir('simulations');
     fsim = fullfile('simulations','sim_2x2.mat');
     sim2x2 = load(fsim); sim2x2 = sim2x2.sim;
     config = sim2x2.config;

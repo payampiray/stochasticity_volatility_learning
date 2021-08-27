@@ -6,6 +6,7 @@ fsum = fullfile('sum',sprintf('%s.mat',mfilename));
 do_sim = ~exist(fsum,'file');
 
 if do_sim
+    mkdir('simulations');
     [~,tvolatile,tstable] = timeseries;
 
     trait_mean = [.5 1 3];

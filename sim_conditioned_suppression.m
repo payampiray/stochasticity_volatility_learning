@@ -5,6 +5,7 @@ fsum = fullfile('sum',sprintf('%s.mat',mfilename));
 do_sim = ~exist(fsum,'file');
 
 if do_sim
+    mkdir('simulations');
     specs = {'Control','Omission'};    
     parameters = struct('nparticles',100,'x0_unc',1,'lambda_v',.2,'lambda_s',.2,'v0',.1,'s0',.1);   
     config = struct('beta',5,'specs',{specs},'shock_mild',.3,'shock_strong',1,'N1',100,'N2',20,'N_omission',5,...

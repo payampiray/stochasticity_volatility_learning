@@ -6,6 +6,7 @@ fsum = fullfile('sum',sprintf('%s.mat',mfilename));
 do_sim = ~exist(fsum,'file');
 
 if do_sim
+    mkdir('simulations');
     factors.vol = {'Small','Large','Small','Large'};
     factors.stc = {'Small','Small','Large','large'};
     
