@@ -138,14 +138,14 @@ end
 
 pnames = {'60/40','70/30','80/20','100/0'};
 
-gnames = specs(2,[1 3]);
+gnames = specs(2,[1 5]);
 % cnames = {'Acquisition','Reversal'};
 cnames = {'Acq','Rev'};
 
 
 h(1) = subplot(nr,nc,subplots(1));
 ylbl = 'Fraction of correct choice';
-plot_fraction(mdat_acq,mdat_rev,edat_acq,edat_rev,gnames,cnames,pnames,ylbl,1);
+plot_fraction(mdat_acq,mdat_rev,edat_acq,edat_rev,gnames,cnames,pnames,ylbl,0);
 % % text(xsA,ysA,abc(2),'fontsize',fsA,'Unit','normalized','fontname',fn);        
 title('Data');
 

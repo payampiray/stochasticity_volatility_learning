@@ -37,10 +37,6 @@ if do_sim
         for k=1:K
             s2v = [s2v rr_min+rr(k)*rand(1,n/length(trait_mean))]; %#ok<AGROW>
         end
-                
-%         lambda = trait.^-1;
-%         lmin = (rr_min+rr).^-1;
-%         lmean = (rr_min+.5*rr).^-1;  
 
         lambda_s = s2v.*lambda_v;        
         

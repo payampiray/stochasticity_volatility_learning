@@ -59,7 +59,7 @@ if ~exist(fsum,'file')
         end
 
         mx(j,:) = median(x);
-        ex(j,:) = serr(x);    
+        ex(j,:) = se_median(x);    
     end
     
     sim = struct('config',sim.config,'specs',{sim.specs},'mx',mx,'ex',ex); %#ok<NASGU>   

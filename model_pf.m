@@ -24,7 +24,7 @@ switch lower(islesioned(1:3))
         lambda_v = specs.lambda_v;
         s_lesioned = specs.s0_lesioned;
         v = specs.v0;
-        [val,vol,stc,lr,unc] = pf_core_unp_lesioned(o,x0_unc,lambda_v,v,s_lesioned,np);        
+        [val,vol,stc,lr,unc] = pf_core_stc_lesioned(o,x0_unc,lambda_v,v,s_lesioned,np);        
     otherwise
         error('bad 3rd input: %d',islesioned);
 end

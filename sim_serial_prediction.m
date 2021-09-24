@@ -8,7 +8,7 @@ do_sim = ~exist(fsum,'file');
 if do_sim
     mkdir('simulations');
     parameters = struct('nparticles',100,'x0_unc',1,'lambda_v',[.2 .2],'lambda_s',[.2 .2],'v0',[.5 .5],'s0',[.5 .5],'v0_lesioned',.25*10^-6*[1 1]);
-    config = struct('N1',200,'N2',100,'rng_id',0,'nsim',100,'model_parameters',parameters);
+    config = struct('N1',200,'N2',100,'rng_id',0,'nsim',100,'model_parameters',parameters,'beta',0.5);
     
     rng(config.rng_id);
     specs = cell(4,4);
@@ -55,65 +55,84 @@ if do_sim
         end
     end
     sim = struct('config',config,'specs',{specs},...
-                 'vols',{vols},'stcs',{stcs},'lrs',{lrs},'vals',{vals}); %#ok<NASGU>    
-    save(fname,'sim','-v7.3');
+                 'vols',{vols},'stcs',{stcs},'lrs',{lrs},'vals',{vals});
+             
+    config = sim.config;    
+    N1 = config.N1;
+    N2 = config.N2;
+
+    t1end = N1;
+    t2end = (N1+N2);        
+    
+    m_prob = cell(1,2);    
+    m_vol = cell(1,2);
+    m_stc = cell(1,2); 
+    m_lr = cell(1,2); 
+    
+    e_prob = cell(1,2); 
+    e_vol = cell(1,2); 
+    e_stc = cell(1,2); 
+    e_lr = cell(1,2); 
+    
+    lr = cell(1,2);
+    prob = cell(1,2);    
+    for dimk=1:2        
+        for j=1:4
+            v = sim.vals{j}{dimk};
+            val = 1./(1+exp(-config.beta*v));
+            
+            m_prob{dimk}(:,j) = mean(val,2);
+            m_lr{dimk}(:,j) = mean(sim.lrs{j}{dimk},2);
+            m_vol{dimk}(:,j) = mean(sim.vols{j}{dimk},2);
+            m_stc{dimk}(:,j) = mean(sim.stcs{j}{dimk},2);
+
+            e_prob{dimk}(:,j) = serr(val,2);
+            e_lr{dimk}(:,j) = serr(sim.lrs{j}{dimk},2);
+            e_vol{dimk}(:,j) = serr(sim.vols{j}{dimk},2);
+            e_stc{dimk}(:,j) = serr(sim.stcs{j}{dimk},2);
+            
+            lr{dimk}(:,j) = sim.lrs{j}{dimk}(t2end,:)';
+            v = sim.vals{j}{dimk}(t1end,:)';
+            prob{dimk}(:,j) = 1./(1+exp(-config.beta*v ));                  
+        end
+    end
+    
+    sim = struct('config',config,'specs',{sim.specs},'m_lr',{m_lr},'m_vol',{m_vol},'m_stc',{m_stc},'m_prob',{m_prob},...
+                 'e_lr',{e_lr},'e_vol',{e_vol},'e_stc',{e_stc},'e_prob',{e_prob},'lr_t2end',{lr},'prob_t1end',{prob});
+    save(fname,'sim');  
 end
 
 if ~exist(fsum,'file')
     sim = load(fname); sim = sim.sim;
-    
 
-    specs = sim.specs;
     N1 = sim.config.N1;
     N2 = sim.config.N2;
-    nsim = sim.config.nsim;
 
-    t12 = 1:(N1+N2);
-    ttend = (N1+N2);
+    t1end = N1;
+    t2end = (N1+N2);
 
-    N  = length(t12);
-    vol = nan(N,4);
-    stc = nan(N,4);
-    lr = nan(N,4);
-    e_vol = nan(N,4);
-    e_stc = nan(N,4);
-    e_lr = nan(N,4);
-
-    val1 = nan(nsim,4);
-    a = nan(nsim,4);
-
-    dim = 1:2;    
-    for k=1:length(dim)
-        dimk = dim(k);
-        for j=1:4
-            if dimk==1
-                vol(:,j) = mean(sim.vols{j}{dimk}(t12,:),2);
-                stc(:,j) = mean(sim.stcs{j}{dimk}(t12,:),2);
-                e_vol(:,j) = serr(sim.vols{j}{dimk}(t12,:),2);
-                e_stc(:,j) = serr(sim.stcs{j}{dimk}(t12,:),2);
-                lr(:,j) = mean(sim.lrs{j}{dimk}(t12,:),2);            
-                e_lr(:,j) = serr(sim.lrs{j}{dimk}(t12,:),2);
-            end
-
-            if dimk==2
-                v = (sim.vals{j}{dimk}(N1,:));
-                val1(:,j) = 1./(1+exp(-.5*v));
-            end
-
-            if dimk==1
-                a(:,j) = sim.lrs{j}{dimk}(ttend,:);
-            end
-
-        end       
-    end
-
-    mv1 = mean(val1);
-
-    ma = mean(a,1);
-    ea = serr(a,1);
+    dim1 = 1;
+    lr = sim.m_lr{dim1};  
+    vol = sim.m_vol{dim1};
+    stc = sim.m_stc{dim1};
+      
+    e_lr = sim.e_lr{dim1};        
+    e_vol = sim.e_vol{dim1};
+    e_stc = sim.e_stc{dim1};
     
-    sim = struct('config',sim.config,'specs',{specs},'vol',vol,'stc',stc,'lr',lr,'e_vol',e_vol,'e_stc',e_stc,'e_lr',e_lr,...
-                'ma',ma,'ea',ea,'mv1',mv1); %#ok<NASGU>        
+    x = sim.lr_t2end{dim1};
+    num2clip(x,3);
+
+
+    ma = sim.m_lr{dim1}(t2end,:);
+    ea = sim.e_lr{dim1}(t2end,:);
+
+    dim2 = 2;
+    mv1 = sim.m_prob{dim2}(t1end,:);    
+    
+    
+    sim = struct('config',sim.config,'specs',{sim.specs},'vol',vol,'stc',stc,'lr',lr,'e_vol',e_vol,'e_stc',e_stc,'e_lr',e_lr,...
+                'ma',ma,'ea',ea,'mv1',mv1);
     save(fsum,'sim');    
 end
 sim = load(fsum); sim = sim.sim;
