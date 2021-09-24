@@ -121,8 +121,6 @@ if ~exist(fsum,'file')
     e_stc = sim.e_stc{dim1};
     
     x = sim.lr_t2end{dim1};
-    num2clip(x,3);
-
 
     ma = sim.m_lr{dim1}(t2end,:);
     ea = sim.e_lr{dim1}(t2end,:);
