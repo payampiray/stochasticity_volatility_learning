@@ -12,8 +12,8 @@ if do_sim
     outcomes = sim2x2.outcomes;
     
     nsim = config.nsim;
-    config.v0_lesioned = config.v0;
-    config.u0_lesioned = config.u0;
+    config.model_parameters.v0_lesioned = config.v0;
+    config.model_parameters.s0_lesioned = config.s0;
     
     N = config.N;    
 

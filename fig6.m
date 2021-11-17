@@ -1,5 +1,5 @@
 function fig6
-fsiz = [.3 .3 .5 .37];
+fsiz = [.3 .3 .5 .39];
 
 close all;
 figure; set(gcf,'units','normalized'); set(gcf,'position',fsiz);
