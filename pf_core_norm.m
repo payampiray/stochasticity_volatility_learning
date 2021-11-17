@@ -7,8 +7,7 @@ y_rng = log([u0 u0]);
 state_model = @(particles)pf_state_transition(particles, sigma_v, sigma_u);
 measurement_model = @pf_measurement_likelihood;
 
-pf = particleFilter(state_model,measurement_model);
-initialize(pf,nparticles,[z_rng; y_rng]);
+pf = pf_initialize(state_model, measurement_model, nparticles, [z_rng; y_rng]);
 
 pf.StateEstimationMethod = 'mean';
 pf.ResamplingMethod = 'systematic';
@@ -19,17 +18,18 @@ val = nan(N,1);
 unc = nan(N,1);
 lr = nan(N,1);
 
-
 m = zeros(1,nparticles);
 w = x0_unc*ones(1,nparticles);
 
 for t=1:size(o,1)    
-    estimated(t,:) = predict(pf);    
-    correct(pf,o(t),m,w);
-    [m,w,k] = kalman(pf.Particles,o(t),m,w);
-    val(t) = pf.Weights*m';
-    unc(t) = pf.Weights*w';
-    lr(t) = pf.Weights*k';
+    pf = pf_predict(pf);    
+    estimated(t,:) = pf.weights*pf.particles';
+    
+    [pf, idx] = pf_correct(pf,o(t),m,w);
+    [m,w,k] = kalman(pf.particles,o(t),m(idx),w(idx));
+    val(t) = pf.weights*m';
+    unc(t) = pf.weights*w';
+    lr(t) = pf.weights*k';
 end
 
 vol = exp(estimated(:,1));

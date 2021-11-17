@@ -7,11 +7,7 @@ rng = bsxfun(@times,u0,ones(length(u0),2)).^-1;
 state_model = @(particles)pf_state_transition(particles, lambda_u);
 measurement_model = @pf_measurement_likelihood;
 
-pf = particleFilter(state_model,measurement_model);
-initialize(pf,nparticles,rng);
-
-pf.StateEstimationMethod = 'mean';
-pf.ResamplingMethod = 'systematic';
+pf = pf_initialize(state_model, measurement_model, nparticles, rng);
 
 N = size(o,1);
 D = size(o,2);
@@ -25,12 +21,13 @@ lr = nan(N,D);
 for t=1:N
     ot = o(t,:);
     
-    estimated(t,:) = predict(pf);
-    val(t,:) = pf.Weights*m';
-    
-    correct(pf,ot,v0,m,w);
-    [m,w,k] = kalman(pf.Particles,ot,v0,m,w);
-    lr(t,:) = pf.Weights*k';    
+    pf = pf_predict(pf);
+    estimated(t,:) = pf.weights*pf.particles';
+    val(t,:) = pf.weights*m';
+        
+    [pf, idx] = pf_correct(pf,ot,v0,m,w);
+    [m,w,k] = kalman(pf.particles,ot,v0,m(:,idx),w(:,idx));
+    lr(t,:) = pf.weights*k';    
 end
 
 vol = bsxfun(@times,v0,ones(N,length(v0)));
