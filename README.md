@@ -1,4 +1,4 @@
-A model for learning based on the joint estimation of stochasticity and volatility\
+A model for learning based on the joint estimation of stochasticity and volatility
 
 ## reference
 please cite this paper if you use this code:
@@ -13,8 +13,12 @@ An important point is that inferences about volatility and stochasticity are mut
 
 ## MATLAB implementation
 This repository contains MATLAB code, which reproduces all figures of the reference paper.
-This requires MATLAB's Control System Toolbox.
 
 ## Python implementation
 A python implementation of the models and examples are available at
 https://github.com/payampiray/health-lesion-stovol
+
+## updates:
+Nov 17, 2021: No requirement of particle filter was implemented, which makes the repository independent of the MATLAB's Control System Toolbox.
+Nov 17, 2021: small bug in particle filter was fixed (with no effect on results)
+Nov 17, 2021: a notational problem was fixed in sim_lesioned.m
