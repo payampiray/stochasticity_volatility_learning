@@ -20,4 +20,4 @@ https://github.com/payampiray/health-lesion-stovol
 ## updates:
 Nov 17, 2021: Particle filter was implemented and used, which makes the repository independent of the MATLAB's Control System Toolbox.\
 Nov 17, 2021: small bug in particle filter was fixed (with no effect on results)\
-Nov 17, 2021: a notational problem was fixed in sim_lesioned.m\
+Nov 17, 2021: a notational problem was fixed in sim_lesioned.m
